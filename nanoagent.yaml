@@ -1,0 +1,11 @@
+id: vc-data-normalizer
+version: 1.0.0
+runtime: python3.11
+entrypoint: src.plugin.__main__
+permissions:
+  network: false
+tools:
+  - normalize_funding
+  - normalize_location
+tasks:
+  - data-normalizer

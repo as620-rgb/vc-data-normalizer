@@ -1,0 +1,20 @@
+[project]
+name = "vc-data-normalizer"
+version = "0.1.0"
+dependencies = [
+    "pydantic>=2.0.0",
+    "slimconfig",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
