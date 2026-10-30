@@ -1,20 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "vc-data-normalizer"
+name = "nanoagent-vc-data-normalizer"
 version = "0.1.0"
-dependencies = [
-    "pydantic>=2.0.0",
-    "slimconfig",
-]
+description = "Vc Data Normalizer: a NanoAgent plugin"
+requires-python = ">=3.12"
+dependencies = ["mcp>=1.27,<2", "slimconfig"]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv.sources]
+slimconfig = { git = "https://github.com/zeyuyang8/slimconfig", branch = "master" }
+
+[tool.ruff]
+line-length = 120
 
 [tool.pytest.ini_options]
+# contract.py and verifier/ live at the plugin root.
 pythonpath = ["."]
-
-[dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-]

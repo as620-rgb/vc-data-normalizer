@@ -1,0 +1,11 @@
+_ > nanoagent.plugin.v0001.ProductConfig:
+tagline: "Turn messy funding and batch notes into clean, comparable numbers"
+summary: "Paste startup records whose funding reads like $5.5M Series A, €20 million seed or ¥3000万, and whose YC batch reads like W24 or Summer '21. The agent parses each one, converts every amount to whole US dollars with a fixed rate table, names the round, season and year, and totals the disclosed funding. The check applies the same written rules to your input and compares every field."
+highlights:
+  - "Reads $, €, £ and ¥ amounts with k, M, B, 万 and 亿, and refuses anything ambiguous instead of guessing"
+  - "Fixed exchange rates and halves-away-from-zero rounding, so every run gives the same dollars"
+  - "Ten checks per run, field by field, record by record"
+steps:
+  - "Give up to 15 records, each a company, a funding text and a batch"
+  - "The agent parses funding, converts it to dollars and parses batches, one tool call each"
+  - "See the normalized table, the totals and every check of the verdict"

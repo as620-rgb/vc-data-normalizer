@@ -1,11 +1,38 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
 id: vc-data-normalizer
-version: 1.0.0
-runtime: python3.11
-entrypoint: src.plugin.__main__
-permissions:
-  network: false
-tools:
-  - normalize_funding
-  - normalize_location
-tasks:
-  - data-normalizer
+name: VC Data Normalizer
+version: 0.1.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: []
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+# One entry per contract.Tool; its input and output classes are contract.TOOLS's.
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  parse_funding:
+    description: Parse up to 15 raw funding texts into disclosed or not, currency, exact amount in that currency and funding round; refuses a text it cannot read
+  convert_to_usd:
+    description: Convert up to 15 amounts to whole US dollars with the plugin's fixed rate table (USD 1, EUR 1.08, GBP 1.27, CNY 0.14), halves rounded away from zero
+  parse_batch:
+    description: Parse up to 15 raw YC batch texts (W24, s2013, Summer '21, X25, Fall 2024) into season and four-digit year
+
+# One entry per contract.Task; its input class is contract.TASKS's.
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  normalize-records:
+    description: Normalize up to 15 messy startup records, funding text and YC batch, into US dollars, a funding round, a season and a year, with totals
+    runner: agent
+    tools: [parse_funding, convert_to_usd, parse_batch]
+    reference: null
+    instructions: |-
+      Plan. Exactly three tool calls, then submit: (1) parse_funding with every record's funding text, in input order; (2) convert_to_usd with the currency and amount of every disclosed entry, in order (skip this call only when no record discloses an amount); (3) parse_batch with every record's batch text, in input order.
+      Build one output record per input record, in the input's order: company exactly as given; disclosed and stage from parse_funding; funding_usd is the usd convert_to_usd returned for that record's amount, or null when the record is not disclosed; season and year from parse_batch.
+      Totals. total_usd is the sum of every disclosed funding_usd (0 when none); undisclosed is how many records are not disclosed.
+      Copy every value from the tools exactly; never convert, round or guess a value yourself. If a tool refuses a text, the task's input is invalid: say so instead of submitting.
